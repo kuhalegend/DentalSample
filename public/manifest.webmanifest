@@ -1,0 +1,9 @@
+{
+  "name": "Dental AI Receptionist",
+  "short_name": "Dental AI",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#0f172a",
+  "description": "Dental receptionist dashboard for appointments, calls, reminders and patient activity."
+}
