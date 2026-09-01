@@ -3,168 +3,141 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#07131f" />
-  <meta name="description" content="Premium dental automation command dashboard" />
-  <link rel="manifest" href="/manifest.webmanifest" />
+  <meta name="theme-color" content="#06131d" />
+  <meta name="description" content="Dental Automation OS — a private demo of automated appointment operations, patient communications, reminders, follow-ups and clinic workflow." />
   <link rel="icon" href="/assets/mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="/styles.css" />
-  <title>Dental Automation OS</title>
+  <link rel="stylesheet" href="/landing.css" />
+  <title>Dental Automation OS — Clinic operations, orchestrated.</title>
 </head>
 <body>
-  <div id="toast" class="toast" aria-live="polite"></div>
+  <header class="nav">
+    <a class="brand" href="/" aria-label="Dental Automation OS home">
+      <span class="brand-mark">✦</span>
+      <span><small>DENTAL</small><b>Automation OS</b></span>
+    </a>
+    <nav>
+      <a href="#workflow">How it works</a>
+      <a href="#platform">Platform</a>
+      <a class="nav-cta" href="/login/">Private demo <span>↗</span></a>
+    </nav>
+  </header>
 
-  <section id="loginView" class="login-shell">
-    <div class="login-art">
-      <div class="aurora aurora-a"></div><div class="aurora aurora-b"></div>
-      <div class="brand-lockup light">
-        <div class="brand-mark"><span>✦</span></div>
-        <div><div class="brand-kicker">DENTAL</div><div class="brand-name">Automation OS</div></div>
-      </div>
-      <div class="login-copy">
-        <div class="eyebrow">PRIVATE DEMO ENVIRONMENT</div>
-        <h1>Clinic operations,<br><em>orchestrated.</em></h1>
-        <p>Appointments, patient communications, reminders, follow-ups and system health in one calm command center.</p>
-        <div class="trust-row">
-          <span><i></i> Server-side authentication</span>
+  <main>
+    <section class="hero">
+      <div class="hero-glow glow-a"></div>
+      <div class="hero-glow glow-b"></div>
+      <div class="hero-copy">
+        <div class="signal"><i></i> PRIVATE DENTAL AUTOMATION DEMO</div>
+        <h1>Less front-desk<br>friction. <em>More care.</em></h1>
+        <p>One intelligent layer for bookings, confirmations, reminders, reschedules, missed calls, post-treatment follow-ups and review requests.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="/login/">Enter private demo <span>→</span></a>
+          <a class="button ghost" href="#workflow">See the patient journey</a>
+        </div>
+        <div class="proof">
           <span><i></i> Live workflow data</span>
+          <span><i></i> Google Calendar + Sheets</span>
+          <span><i></i> SMS + voice ready</span>
         </div>
       </div>
-      <div class="art-footer">Dental V3 · Secure demo access</div>
-    </div>
-    <div class="login-panel">
-      <form id="loginForm" class="login-card">
-        <div class="mobile-brand brand-lockup">
-          <div class="brand-mark"><span>✦</span></div><div><div class="brand-kicker">DENTAL</div><div class="brand-name">Automation OS</div></div>
+
+      <div class="hero-console" aria-label="Workflow preview">
+        <div class="console-top">
+          <span class="console-title">LIVE PATIENT JOURNEY</span>
+          <span class="live"><i></i> READY</span>
         </div>
-        <div class="eyebrow dark">WELCOME BACK</div>
-        <h2>Sign in to the clinic</h2>
-        <p class="muted">Use the private demo credentials provided to you.</p>
-        <label>Username<input id="username" autocomplete="username" required /></label>
-        <label>Password<div class="password-wrap"><input id="password" type="password" autocomplete="current-password" required /><button type="button" id="togglePassword" class="icon-button text-icon">Show</button></div></label>
-        <button id="loginButton" class="primary-button full" type="submit"><span>Enter dashboard</span><b>→</b></button>
-        <p id="loginError" class="form-error" hidden></p>
-        <div class="privacy-note"><span>◆</span><p>This demo should contain test data only. Production access should use individual staff accounts and stronger authentication.</p></div>
-      </form>
-    </div>
-  </section>
-
-  <div id="appView" class="app-shell" hidden>
-    <aside class="sidebar">
-      <div class="brand-lockup light sidebar-brand">
-        <div class="brand-mark small"><span>✦</span></div><div><div class="brand-kicker">DENTAL</div><div class="brand-name">Automation OS</div></div>
-      </div>
-      <div class="clinic-chip"><div class="clinic-avatar" id="clinicInitials">BD</div><div><strong id="clinicNameSide">Dental Clinic</strong><small>Demo workspace</small></div><span class="chev">⌄</span></div>
-      <nav id="nav">
-        <button class="nav-item active" data-page="overview"><span>⌂</span>Overview</button>
-        <button class="nav-item" data-page="appointments"><span>▦</span>Appointments <b id="navAppointmentCount">0</b></button>
-        <button class="nav-item" data-page="communications"><span>◌</span>Communications</button>
-        <button class="nav-item" data-page="followups"><span>↗</span>Follow-ups</button>
-        <button class="nav-item" data-page="system"><span>◇</span>System health</button>
-      </nav>
-      <div class="sidebar-bottom">
-        <div class="environment-card"><span class="pulse-dot"></span><div><strong>Demo environment</strong><small>Live backend data</small></div></div>
-        <button id="logoutButton" class="nav-item logout"><span>↪</span>Sign out</button>
-      </div>
-    </aside>
-
-    <main class="main">
-      <header class="topbar">
-        <button id="mobileMenu" class="mobile-menu">☰</button>
-        <div><div class="breadcrumb" id="breadcrumb">OVERVIEW</div><h3 id="pageTitle">Clinic command center</h3></div>
-        <div class="top-actions">
-          <button id="refreshButton" class="soft-button"><span>↻</span><span class="hide-mobile">Refresh</span></button>
-          <div class="date-pill"><span>◷</span><div><small>Clinic time</small><strong id="clinicClock">—</strong></div></div>
-          <button class="avatar-button" id="profileButton">DS</button>
-        </div>
-      </header>
-
-      <div id="loadingState" class="loading-state"><div class="loader"></div><span>Loading live clinic data…</span></div>
-
-      <div id="content" hidden>
-        <section id="page-overview" class="page active">
-          <div class="hero-row">
-            <div><div class="eyebrow dark">CLINIC OVERVIEW</div><h1 id="greeting">Good day.</h1><p id="heroSubtitle" class="muted">Here is what is happening across the clinic.</p></div>
-            <button class="primary-button" data-open-booking><span>＋ New appointment</span></button>
-          </div>
-
-          <div class="metric-grid">
-            <article class="metric-card premium"><div class="metric-top"><span class="metric-icon">◷</span><span class="trend neutral">Today</span></div><strong id="metricToday">0</strong><p>Appointments today</p><div class="metric-foot" id="metricTodayFoot">No schedule loaded</div></article>
-            <article class="metric-card"><div class="metric-top"><span class="metric-icon green">✓</span><span class="trend good">Live</span></div><strong id="metricConfirmed">0</strong><p>Confirmed appointments</p><div class="metric-foot">Active appointment records</div></article>
-            <article class="metric-card"><div class="metric-top"><span class="metric-icon amber">◌</span><span class="trend neutral">Queue</span></div><strong id="metricAwaiting">0</strong><p>Awaiting response</p><div class="metric-foot">Booked, not yet confirmed</div></article>
-            <article class="metric-card"><div class="metric-top"><span class="metric-icon violet">↗</span><span class="trend neutral">Automation</span></div><strong id="metricFollowups">0</strong><p>Follow-ups pending</p><div class="metric-foot">Queued or processing</div></article>
-          </div>
-
-          <div class="dashboard-grid">
-            <article class="panel span-2">
-              <div class="panel-head"><div><div class="eyebrow dark">TODAY</div><h3>Appointment runway</h3></div><button class="link-button" data-go="appointments">View all →</button></div>
-              <div id="todaySchedule" class="schedule-list"></div>
-            </article>
-            <article class="panel">
-              <div class="panel-head"><div><div class="eyebrow dark">AUTOMATION</div><h3>Live activity</h3></div><span class="live-pill"><i></i>LIVE</span></div>
-              <div id="activityFeed" class="activity-feed"></div>
-            </article>
-          </div>
-
-          <div class="dashboard-grid lower">
-            <article class="panel span-2">
-              <div class="panel-head"><div><div class="eyebrow dark">PATIENT FLOW</div><h3>Appointment status</h3></div><span class="panel-note">Real records only</span></div>
-              <div id="statusBars" class="status-bars"></div>
-            </article>
-            <article class="panel">
-              <div class="panel-head"><div><div class="eyebrow dark">CONNECTIONS</div><h3>System health</h3></div><button class="link-button" data-go="system">Details →</button></div>
-              <div id="miniHealth" class="mini-health"></div>
-            </article>
-          </div>
-        </section>
-
-        <section id="page-appointments" class="page">
-          <div class="section-heading"><div><div class="eyebrow dark">APPOINTMENTS</div><h1>Schedule & patient flow</h1><p class="muted">Every record below comes from the connected backend.</p></div><button class="primary-button" data-open-booking>＋ New appointment</button></div>
-          <article class="panel table-panel">
-            <div class="table-toolbar"><div class="search-box"><span>⌕</span><input id="appointmentSearch" placeholder="Search name, phone, service…" /></div><select id="appointmentStatusFilter"><option value="all">All statuses</option><option value="booked">Booked</option><option value="confirmed">Confirmed</option><option value="reschedule_requested">Reschedule requested</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option><option value="no_show">No show</option></select></div>
-            <div class="table-wrap"><table><thead><tr><th>Patient</th><th>Appointment</th><th>Service</th><th>Status</th><th>Automation</th><th></th></tr></thead><tbody id="appointmentRows"></tbody></table></div>
-            <div id="appointmentEmpty" class="empty-state" hidden><span>◫</span><h3>No appointments found</h3><p>Try another filter or create a new appointment.</p></div>
+        <div class="journey">
+          <article class="journey-row active">
+            <span class="step">01</span>
+            <div><small>APPOINTMENT</small><strong>Booking created</strong></div>
+            <span class="state">Synced</span>
           </article>
-        </section>
-
-        <section id="page-communications" class="page">
-          <div class="section-heading"><div><div class="eyebrow dark">COMMUNICATIONS</div><h1>Patient conversation history</h1><p class="muted">SMS, voice and other communication events recorded by Dental V3.</p></div></div>
-          <div class="communication-layout">
-            <article class="panel"><div class="table-toolbar"><div class="search-box"><span>⌕</span><input id="communicationSearch" placeholder="Search message or number…" /></div><select id="communicationChannel"><option value="all">All channels</option><option value="sms">SMS</option><option value="voice">Voice</option><option value="email">Email</option><option value="whatsapp">WhatsApp</option></select></div><div id="communicationList" class="communication-list"></div></article>
-            <article class="panel summary-panel"><div class="eyebrow dark">CHANNEL SUMMARY</div><h3>Communication mix</h3><div id="communicationSummary"></div></article>
-          </div>
-        </section>
-
-        <section id="page-followups" class="page">
-          <div class="section-heading"><div><div class="eyebrow dark">FOLLOW-UPS</div><h1>Post-treatment & review automation</h1><p class="muted">See every scheduled follow-up and its provider result.</p></div></div>
-          <div id="followupCards" class="followup-grid"></div>
-        </section>
-
-        <section id="page-system" class="page">
-          <div class="section-heading"><div><div class="eyebrow dark">SYSTEM HEALTH</div><h1>Infrastructure & clinic configuration</h1><p class="muted">Read-only operational view for this demo.</p></div></div>
-          <div class="system-grid"><article class="panel span-2"><div class="panel-head"><div><div class="eyebrow dark">INTEGRATIONS</div><h3>Connected services</h3></div></div><div id="integrationGrid" class="integration-grid"></div></article><article class="panel"><div class="eyebrow dark">CLINIC PROFILE</div><h3 id="clinicNameSystem">Dental Clinic</h3><div id="clinicProfile" class="detail-list"></div></article></div>
-          <div class="system-grid lower"><article class="panel"><div class="eyebrow dark">OPENING HOURS</div><h3>Working week</h3><div id="openingHours" class="hours-list"></div></article><article class="panel span-2"><div class="eyebrow dark">SERVICES</div><h3>Bookable treatments</h3><div id="serviceGrid" class="service-grid"></div></article></div>
-        </section>
+          <div class="connector"></div>
+          <article class="journey-row">
+            <span class="step">02</span>
+            <div><small>PATIENT COMMS</small><strong>Confirmation sent</strong></div>
+            <span class="state">Automated</span>
+          </article>
+          <div class="connector"></div>
+          <article class="journey-row">
+            <span class="step">03</span>
+            <div><small>RESPONSE</small><strong>Confirm · Reschedule · Cancel</strong></div>
+            <span class="state">Handled</span>
+          </article>
+          <div class="connector"></div>
+          <article class="journey-row">
+            <span class="step">04</span>
+            <div><small>AFTERCARE</small><strong>Follow-up + review request</strong></div>
+            <span class="state">Scheduled</span>
+          </article>
+        </div>
+        <div class="console-foot">
+          <span>Dental V3 automation engine</span>
+          <b>One calm command center</b>
+        </div>
       </div>
-    </main>
-  </div>
+    </section>
 
-  <div id="bookingModal" class="modal-shell" hidden>
-    <div class="modal-backdrop" data-close-modal></div>
-    <div class="modal-card">
-      <div class="modal-head"><div><div class="eyebrow dark">NEW APPOINTMENT</div><h2>Create patient booking</h2></div><button class="close-button" data-close-modal>×</button></div>
-      <form id="bookingForm">
-        <div class="form-grid"><label>Patient name<input name="patient_name" required placeholder="Full name" /></label><label>Phone number<input name="patient_phone" required placeholder="+44… / +63…" /></label><label>Email <span>optional</span><input name="patient_email" type="email" placeholder="patient@email.com" /></label><label>Service<select name="service" id="bookingService" required></select></label><label class="span-2">Appointment date & time <small id="clinicTimezoneLabel"></small><input name="start_time_local" type="datetime-local" required /></label></div>
-        <div id="slotResult" class="slot-result" hidden></div>
-        <div class="modal-actions"><button type="button" id="checkSlotButton" class="soft-button">Check availability</button><button type="submit" id="bookButton" class="primary-button">Create appointment →</button></div>
-      </form>
-    </div>
-  </div>
+    <section class="stack-strip" aria-label="Technology connections">
+      <span>GOOGLE CALENDAR</span><i></i><span>GOOGLE SHEETS</span><i></i><span>TEXTBEE</span><i></i><span>VAPI</span><i></i><span>N8N</span><i></i><span>SUPABASE</span>
+    </section>
 
-  <div id="appointmentDrawer" class="drawer-shell" hidden>
-    <div class="drawer-backdrop" data-close-drawer></div>
-    <aside class="drawer"><div class="drawer-head"><div><div class="eyebrow dark">APPOINTMENT</div><h2 id="drawerPatientName">Patient</h2></div><button class="close-button" data-close-drawer>×</button></div><div id="drawerContent"></div></aside>
-  </div>
+    <section class="section" id="workflow">
+      <div class="section-kicker">THE PATIENT JOURNEY</div>
+      <div class="section-head">
+        <h2>One journey.<br><em>Zero loose ends.</em></h2>
+        <p>The clinic keeps its familiar calendar and records. Dental Automation OS coordinates the repetitive work around them.</p>
+      </div>
 
-  <script src="/app.js" defer></script>
+      <div class="flow-grid">
+        <article><span>01</span><h3>Book</h3><p>Check availability, create the appointment, and sync the record.</p></article>
+        <article><span>02</span><h3>Confirm</h3><p>Send confirmation and understand patient replies automatically.</p></article>
+        <article><span>03</span><h3>Remind</h3><p>Run scheduled reminders without duplicate sends or manual chasing.</p></article>
+        <article><span>04</span><h3>Recover</h3><p>Handle missed calls, reschedules, cancellations and response status.</p></article>
+        <article><span>05</span><h3>Follow up</h3><p>Continue aftercare with post-treatment messages and review requests.</p></article>
+      </div>
+    </section>
+
+    <section class="section platform" id="platform">
+      <div class="platform-copy">
+        <div class="section-kicker">THE COMMAND CENTER</div>
+        <h2>Simple on the surface.<br><em>Serious underneath.</em></h2>
+        <p>Staff get one clean view of appointments, communications, follow-ups and system health. The workflow engine handles the orchestration behind the scenes.</p>
+        <a href="/login/" class="text-link">Open the private demo <span>→</span></a>
+      </div>
+      <div class="platform-grid">
+        <article><b>01</b><h3>Appointments</h3><p>Book, reschedule, cancel and complete treatment from one place.</p></article>
+        <article><b>02</b><h3>Communications</h3><p>Keep patient SMS and voice activity visible without developer tools.</p></article>
+        <article><b>03</b><h3>Automation</h3><p>See reminders, follow-ups and review actions as they move through the system.</p></article>
+        <article><b>04</b><h3>System health</h3><p>Know which clinic connections are ready before the day gets busy.</p></article>
+      </div>
+    </section>
+
+    <section class="section fit">
+      <div>
+        <div class="section-kicker">FITS THE CLINIC</div>
+        <h2>Keep the tools.<br><em>Add the automation.</em></h2>
+      </div>
+      <div class="fit-copy">
+        <p>For a simple office demo, Google Calendar acts as the appointment diary and Google Sheets as the readable patient/appointment log.</p>
+        <p>For a real dental practice with existing management software, the same automation layer can connect through supported APIs and webhooks instead of replacing the clinic’s core system.</p>
+      </div>
+    </section>
+
+    <section class="cta-section">
+      <div class="cta-card">
+        <span class="mini">PRIVATE DEMO ACCESS</span>
+        <h2>See what the clinic<br>actually experiences.</h2>
+        <p>Use the private demo to create an appointment and follow the workflow from the clinic side.</p>
+        <a class="button light" href="/login/">Enter Dental Automation OS <span>→</span></a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <a class="brand footer-brand" href="/"><span class="brand-mark">✦</span><span><small>DENTAL</small><b>Automation OS</b></span></a>
+    <p>Private demonstration environment · Dental V3</p>
+    <a href="/login/">Demo login ↗</a>
+  </footer>
 </body>
 </html>
