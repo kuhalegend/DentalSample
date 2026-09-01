@@ -1,0 +1,20 @@
+DENTAL DASHBOARD SECURITY NOTE
+==============================
+
+Current audit finding:
+- public.appointment_followups has Row Level Security (RLS) DISABLED.
+
+Why this matters:
+Supabase warns that tables without RLS can be exposed through client-facing API roles. The premium dashboard V1 does NOT place the Supabase anon key or service-role key in browser code; it reads data through authenticated Netlify Functions. However, the database should still be corrected before this becomes a public production system.
+
+Do not run this blindly yet:
+ALTER TABLE public.appointment_followups ENABLE ROW LEVEL SECURITY;
+
+Reason:
+We first need to confirm whether the existing working n8n Supabase credential is using a service-role key or anon/authenticated access. Enabling RLS without appropriate policies can block a currently working integration.
+
+Demo access note:
+Username: dentalsample
+Password: 123456
+
+This is intentionally easy for a PRIVATE DEMO with test data only. It is not appropriate for real patient data. Production should use individual user accounts, strong passwords/MFA and role-based access.

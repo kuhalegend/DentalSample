@@ -1,0 +1,1 @@
+const {verify,json}=require('./_auth');exports.handler=async(event)=>json(200,{authenticated:!!verify(event)});
