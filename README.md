@@ -9,6 +9,7 @@ Premium Netlify dashboard connected to the tested Dental V3 backend.
 - New booking, availability, reschedule, cancel and treatment-complete actions proxy to the existing n8n `dental-v3-dashboard-action` webhook.
 - Login and backend secrets stay server-side in Netlify Functions.
 - Dashboard reads are served by the custom-auth Supabase Edge Function `dental-dashboard-snapshot`; no Supabase service-role key is stored in Netlify.
+- On the first successful demo login, the server safely skips the known leftover final-test reminder/follow-up queues so they cannot consume TextBee credits later. Only exact known test external request IDs are targeted; new client-created appointments are untouched.
 
 ## Demo login
 
@@ -31,7 +32,7 @@ This easy shared login is for a private demo containing test data only.
 
 ## Important before live mutation testing
 
-The n8n workflow must be published for production webhook actions. Publishing also enables its scheduled reminder/follow-up workers, so old test queues must be cleaned first and SMS sending should be deliberately enabled only when ready.
+The n8n workflow must be published for production webhook actions. Publishing also enables its scheduled reminder/follow-up workers. Log in to the dashboard once before publishing n8n so the known stale test queues are cleaned first.
 
 ## Database security item
 
