@@ -30,7 +30,7 @@ function startRileyTimer(){clearInterval(rileyDemo.timer);rileyDemo.startedAt=Da
 function stopRileyTimer(){clearInterval(rileyDemo.timer);rileyDemo.timer=null}
 
 async function waitForRileyWidgetLoader(){
-  const deadline=Date.now()+10000;
+  const deadline=Date.now()+20000;
   while(typeof window.WidgetLoader!=='function'&&Date.now()<deadline)await new Promise(resolve=>setTimeout(resolve,100));
   if(typeof window.WidgetLoader!=='function')throw new Error('Voice controls could not be loaded.');
   return window.WidgetLoader;

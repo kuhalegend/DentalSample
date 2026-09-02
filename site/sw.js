@@ -1,5 +1,5 @@
-const CACHE='dental-os-v4';
-const ASSETS=['/','/index.html','/styles.css','/app.js','/extra.js','/riley.css','/riley.js','/assets/mark.svg'];
+const CACHE='dental-os-v5';
+const ASSETS=['/','/index.html','/styles.css','/app.js','/extra.js','/riley.css','/riley.js','/vendor/vapi-widget.js','/assets/mark.svg'];
 
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));
