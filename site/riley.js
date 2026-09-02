@@ -85,8 +85,7 @@ async function startRileyCall(){
   try{
     await checkRileyMicrophone();
     setRileyButton('Connecting…',true);setRileyStatus('ready','Connecting Riley…','Creating secure voice session');setRileyStage('Creating Vapi web call');
-    const call=await rileyDemo.vapi.start(rileyDemo.assistantId);
-    if(!call&&!rileyDemo.active)throw new Error('Vapi did not return an active web call.');
+    await rileyDemo.vapi.start(rileyDemo.assistantId);
   }catch(error){
     console.error('Riley call start failed:',error);const friendly=rileyFriendlyError(error);
     rileyDemo.starting=false;setRileyButton('Start Free Demo Call',false);setRileyStatus('error','Demo needs attention',friendly);setRileyStage(friendly);if(typeof toast==='function')toast(friendly,true);
@@ -122,7 +121,7 @@ async function initRileyDemo(){
   try{
     const [response,Vapi]=await Promise.all([fetch('/.netlify/functions/vapi-config',{headers:{Accept:'application/json'}}),waitForVapiSDK()]);
     const config=await response.json().catch(()=>({}));if(!response.ok)throw new Error(config.error||'Riley browser demo is unavailable.');
-    rileyDemo.assistantId=config.assistantId;rileyDemo.vapi=new Vapi(config.publicKey);bindRileyEvents(rileyDemo.vapi);mountRileyControls(mount);setRileyStatus('ready','Riley is online','Waiting for a call');
+    rileyDemo.assistantId=config.assistantId;rileyDemo.vapi=new Vapi(config.publicKey,undefined,{avoidEval:true,alwaysIncludeMicInPermissionPrompt:true});bindRileyEvents(rileyDemo.vapi);mountRileyControls(mount);setRileyStatus('ready','Riley is online','Waiting for a call');
   }catch(error){rileyDemo.initialized=false;const friendly=rileyFriendlyError(error);setRileyStatus('error','Demo unavailable',friendly)}
 }
 
