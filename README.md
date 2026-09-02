@@ -18,7 +18,7 @@ Current demo stack shown in System Health:
 
 ## Riley browser demo
 
-The authenticated Overview includes a browser-based **Talk to Riley** demo powered by the restricted Vapi public key. Configure these Netlify environment variables and redeploy:
+The authenticated Overview includes a browser-based **Talk to Riley** demo powered by the official Vapi Web SDK and the restricted Vapi public key. Configure these Netlify environment variables and redeploy:
 
 - `VAPI_PUBLIC_KEY` — a Vapi public key restricted to the production site origin and the Riley assistant
 - `VAPI_ASSISTANT_ID` — Riley's assistant ID
