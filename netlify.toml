@@ -19,18 +19,6 @@
     Cache-Control = "public, max-age=86400"
 
 [[redirects]]
-  from = "/vendor/vapi-web.mjs"
-  to = "https://esm.sh/@vapi-ai/web@2.5.0/es2022/web.bundle.mjs"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/node/events.mjs"
-  to = "https://esm.sh/node/events.mjs"
-  status = 200
-  force = true
-
-[[redirects]]
   from = "/login"
   to = "/login/"
   status = 301
