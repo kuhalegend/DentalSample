@@ -29,6 +29,41 @@ function setRileyTimer(seconds=0){
 function startRileyTimer(){clearInterval(rileyDemo.timer);rileyDemo.startedAt=Date.now();setRileyTimer(0);rileyDemo.timer=setInterval(()=>setRileyTimer(Math.floor((Date.now()-rileyDemo.startedAt)/1000)),1000)}
 function stopRileyTimer(){clearInterval(rileyDemo.timer);rileyDemo.timer=null}
 
+function rileyErrorText(error){
+  const candidates=[error?.message,error?.error?.message,error?.error?.response?.data?.message,error?.error?.response?.data?.error,error?.reason,error?.type,typeof error==='string'?error:''];
+  return String(candidates.find(value=>value&&String(value)!=='[object Object]')||'').trim();
+}
+
+function rileyFriendlyError(error){
+  const raw=rileyErrorText(error),lower=raw.toLowerCase();
+  if(/microphone|permission|notallowed|not allowed|media device/.test(lower))return'Microphone is blocked. Allow microphone access in Chrome and Android settings.';
+  if(/notfound|not found|no device/.test(lower))return'No microphone was detected on this device.';
+  if(/401|403|unauthor|invalid key|forbidden/.test(lower))return'Vapi access was rejected. Check the public key origin and Riley restriction.';
+  return raw?`Call could not start: ${raw.slice(0,120)}`:'Call could not start. Check the tablet microphone permission and try again.';
+}
+
+function installRileyMicrophoneCheck(mount){
+  const readyKey='brightsmile_riley_microphone_ready';
+  navigator.permissions?.query?.({name:'microphone'}).then(result=>{if(result.state==='granted')sessionStorage.setItem(readyKey,'true')}).catch(()=>{});
+  mount.addEventListener('click',async event=>{
+    const button=event.target.closest?.('button');
+    if(!button||!/start free demo call/i.test(button.textContent||'')||sessionStorage.getItem(readyKey)==='true')return;
+    event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
+    if(!navigator.mediaDevices?.getUserMedia){setRileyStatus('error','Microphone unavailable','This browser does not support microphone calls.');return}
+    setRileyStatus('ready','Checking microphone…','Allow microphone access');
+    try{
+      const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+      stream.getTracks().forEach(track=>track.stop());
+      sessionStorage.setItem(readyKey,'true');
+      setRileyStatus('ready','Microphone ready','Tap Start Free Demo Call again');
+    }catch(error){
+      const friendly=rileyFriendlyError(error);
+      setRileyStatus('error','Microphone blocked',friendly);
+      if(typeof toast==='function')toast(friendly,true);
+    }
+  },true);
+}
+
 async function waitForRileyWidgetLoader(){
   const deadline=Date.now()+20000;
   while(typeof window.WidgetLoader!=='function'&&Date.now()<deadline)await new Promise(resolve=>setTimeout(resolve,100));
@@ -49,9 +84,10 @@ async function initRileyDemo(){
     if(!response.ok)throw new Error(config.error||'Riley browser demo is unavailable.');
     rileyDemo.maxSeconds=Math.min(300,Number(config.maxDemoSeconds)||300);
     const WidgetLoader=await waitForRileyWidgetLoader();
+    installRileyMicrophoneCheck(mount);
     const onCallStart=()=>{rileyDemo.active=true;document.querySelector('#rileyDemoCard')?.classList.add('calling');setRileyStatus('live','Riley is live','Speak naturally');startRileyTimer()};
     const onCallEnd=()=>{rileyDemo.active=false;document.querySelector('#rileyDemoCard')?.classList.remove('calling');stopRileyTimer();setRileyStatus('ready','Call complete','Refreshing dashboard…');setTimeout(async()=>{try{if(typeof load==='function')await load(1)}catch{if(typeof toast==='function')toast('Call completed. Select Refresh to load the latest activity.',true)}finally{setRileyStatus('ready','Riley is online','Ready for another call')}},6000)};
-    const onError=error=>{rileyDemo.active=false;document.querySelector('#rileyDemoCard')?.classList.remove('calling');stopRileyTimer();const message=String(error?.message||error||'Voice call could not start.');const friendly=/microphone|permission/i.test(message)?'Allow microphone access, then try again.':'Check your connection and try again.';setRileyStatus('error','Demo needs attention',friendly);if(typeof toast==='function')toast(friendly,true)};
+    const onError=error=>{rileyDemo.active=false;document.querySelector('#rileyDemoCard')?.classList.remove('calling');stopRileyTimer();console.error('Riley browser call error:',error);const friendly=rileyFriendlyError(error);setRileyStatus('error','Demo needs attention',friendly);if(typeof toast==='function')toast(friendly,true)};
     rileyDemo.widget=new WidgetLoader({
       container:mount,
       component:'VapiWidget',

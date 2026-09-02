@@ -1,4 +1,4 @@
-const CACHE='dental-os-v5';
+const CACHE='dental-os-v6';
 const ASSETS=['/','/index.html','/styles.css','/app.js','/extra.js','/riley.css','/riley.js','/vendor/vapi-widget.js','/assets/mark.svg'];
 
 self.addEventListener('install',event=>{
