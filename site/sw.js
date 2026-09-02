@@ -1,1 +1,15 @@
-const CACHE='dental-os-v1';const ASSETS=['/','/index.html','/styles.css','/app.js','/assets/mark.svg'];self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS))));self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('fetch',e=>{if(e.request.url.includes('/.netlify/functions/'))return;e.respondWith(fetch(e.request).catch(()=>caches.match(e.request))) });
+const CACHE='dental-os-v2';
+const ASSETS=['/','/index.html','/styles.css','/app.js','/extra.js','/riley.css','/riley.js','/assets/mark.svg'];
+
+self.addEventListener('install',event=>{
+  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));
+});
+
+self.addEventListener('activate',event=>{
+  event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim()));
+});
+
+self.addEventListener('fetch',event=>{
+  if(event.request.url.includes('/.netlify/functions/'))return;
+  event.respondWith(fetch(event.request).catch(()=>caches.match(event.request)));
+});
