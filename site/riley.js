@@ -1,4 +1,4 @@
-const rileyDemo={initialized:false,active:false,starting:false,startedAt:0,timer:null,vapi:null,assistantId:null,transcript:[]};
+const rileyDemo={initialized:false,active:false,starting:false,startedAt:0,timer:null,vapi:null,assistantId:null,transcript:[],localAudioSeen:false,micCheckTimer:null};
 
 function mountRileyCard(){
   if(document.querySelector('#rileyDemoCard'))return;
@@ -72,19 +72,12 @@ function mountRileyControls(mount){
 function setRileyButton(label,disabled=false){const button=document.querySelector('#rileyCallButton');if(button){button.textContent=label;button.disabled=disabled}}
 function setRileyStage(text){const stage=document.querySelector('#rileyStage');if(stage)stage.textContent=text}
 
-async function checkRileyMicrophone(){
-  if(!navigator.mediaDevices?.getUserMedia)throw new Error('This browser does not support microphone calls.');
-  const stream=await navigator.mediaDevices.getUserMedia({audio:true});
-  stream.getTracks().forEach(track=>track.stop());
-}
-
 async function startRileyCall(){
   if(rileyDemo.starting||rileyDemo.active||!rileyDemo.vapi)return;
-  rileyDemo.starting=true;rileyDemo.transcript=[];renderRileyTranscript();
-  setRileyButton('Checking microphone…',true);setRileyStatus('ready','Preparing Riley…','Allow microphone access');setRileyStage('Checking tablet or computer microphone');
+  if(!navigator.mediaDevices?.getUserMedia){const message='This browser does not support microphone calls.';setRileyStatus('error','Demo needs attention',message);setRileyStage(message);return}
+  rileyDemo.starting=true;rileyDemo.localAudioSeen=false;rileyDemo.transcript=[];renderRileyTranscript();
+  setRileyButton('Connecting…',true);setRileyStatus('ready','Connecting Riley…','Allow microphone access when prompted');setRileyStage('Creating secure voice call and opening microphone');
   try{
-    await checkRileyMicrophone();
-    setRileyButton('Connecting…',true);setRileyStatus('ready','Connecting Riley…','Creating secure voice session');setRileyStage('Creating Vapi web call');
     await rileyDemo.vapi.start(rileyDemo.assistantId);
   }catch(error){
     console.error('Riley call start failed:',error);const friendly=rileyFriendlyError(error);
@@ -100,15 +93,43 @@ async function endRileyCall(){
 
 function finishRileyCall(){
   if(!rileyDemo.active&&!rileyDemo.starting)return;
-  rileyDemo.active=false;rileyDemo.starting=false;document.querySelector('#rileyDemoCard')?.classList.remove('calling');stopRileyTimer();setRileyButton('Start Free Demo Call',false);setRileyStatus('ready','Call complete','Refreshing dashboard…');setRileyStage('Call ended · refreshing dashboard data');
+  rileyDemo.active=false;rileyDemo.starting=false;rileyDemo.localAudioSeen=false;clearTimeout(rileyDemo.micCheckTimer);rileyDemo.micCheckTimer=null;document.querySelector('#rileyDemoCard')?.classList.remove('calling');stopRileyTimer();setRileyButton('Start Free Demo Call',false);setRileyStatus('ready','Call complete','Refreshing dashboard…');setRileyStage('Call ended · refreshing dashboard data');
   setTimeout(async()=>{try{if(typeof load==='function')await load(1)}catch{if(typeof toast==='function')toast('Call completed. Select Refresh to load the latest activity.',true)}finally{setRileyStatus('ready','Riley is online','Ready for another call');setRileyStage('Ready for another browser call')}},6000);
 }
 
+function activateRileyCall(){
+  try{rileyDemo.vapi?.setMuted(false)}catch(error){console.warn('Could not explicitly unmute Riley microphone:',error)}
+  if(!rileyDemo.active){rileyDemo.active=true;rileyDemo.starting=false;document.querySelector('#rileyDemoCard')?.classList.add('calling');setRileyButton('End Call',false);startRileyTimer()}
+  setRileyStatus('live','Riley is live','Microphone is connected');setRileyStage('Connected · speak naturally');
+}
+
+function verifyRileyLocalAudio(){
+  clearTimeout(rileyDemo.micCheckTimer);
+  rileyDemo.micCheckTimer=setTimeout(()=>{
+    if(!rileyDemo.active)return;
+    try{
+      const daily=rileyDemo.vapi?.getDailyCallObject?.();
+      const local=daily?.participants?.()?.local;
+      const audioState=local?.tracks?.audio?.state;
+      const muted=rileyDemo.vapi?.isMuted?.()===true||daily?.localAudio?.()===false;
+      if(muted)rileyDemo.vapi?.setMuted(false);
+      if(audioState==='blocked'||audioState==='off'||audioState==='interrupted'){
+        const message='Microphone track is not active. Select Allow for this site, then start a new call.';
+        setRileyStatus('error','Microphone needs attention',message);setRileyStage(message);if(typeof toast==='function')toast(message,true);
+      }else if(!rileyDemo.localAudioSeen){
+        setRileyStage('Connected · speak now to test the microphone');
+      }
+    }catch(error){console.warn('Could not inspect Riley microphone track:',error)}
+  },2500);
+}
+
 function bindRileyEvents(vapi){
-  vapi.on('call-start',()=>{rileyDemo.active=true;rileyDemo.starting=false;document.querySelector('#rileyDemoCard')?.classList.add('calling');setRileyButton('End Call',false);setRileyStatus('live','Riley is live','Speak naturally');setRileyStage('Connected · microphone is live');startRileyTimer()});
+  vapi.on('call-start-success',()=>{activateRileyCall();verifyRileyLocalAudio()});
+  vapi.on('call-start',()=>{activateRileyCall();verifyRileyLocalAudio()});
   vapi.on('call-end',()=>finishRileyCall());
   vapi.on('speech-start',()=>setRileyStage('Riley is speaking'));
   vapi.on('speech-end',()=>setRileyStage('Riley is listening'));
+  vapi.on('local-volume-level',level=>{if(!rileyDemo.active||Number(level)<=0.002)return;rileyDemo.localAudioSeen=true;setRileyStatus('live','Riley is live','Your microphone is working');setRileyStage('Microphone detected · Riley is listening')});
   vapi.on('message',message=>{if(message?.type==='transcript'&&message.transcriptType==='final'&&message.transcript){rileyDemo.transcript.push({role:message.role,text:message.transcript});renderRileyTranscript()}});
   vapi.on('call-start-progress',event=>{const stage=String(event?.stage||'connecting').replaceAll('-',' ');setRileyStage(`${stage} · ${event?.status||'working'}`)});
   vapi.on('call-start-failed',event=>{console.error('Riley call-start-failed:',event);const friendly=rileyFriendlyError(event);setRileyStage(friendly)});
@@ -121,7 +142,7 @@ async function initRileyDemo(){
   try{
     const [response,Vapi]=await Promise.all([fetch('/.netlify/functions/vapi-config',{headers:{Accept:'application/json'}}),waitForVapiSDK()]);
     const config=await response.json().catch(()=>({}));if(!response.ok)throw new Error(config.error||'Riley browser demo is unavailable.');
-    rileyDemo.assistantId=config.assistantId;rileyDemo.vapi=new Vapi(config.publicKey,undefined,{avoidEval:true,alwaysIncludeMicInPermissionPrompt:true});bindRileyEvents(rileyDemo.vapi);mountRileyControls(mount);setRileyStatus('ready','Riley is online','Waiting for a call');
+    rileyDemo.assistantId=config.assistantId;rileyDemo.vapi=new Vapi(config.publicKey,undefined,{avoidEval:true,alwaysIncludeMicInPermissionPrompt:true},{audioSource:true,videoSource:false});bindRileyEvents(rileyDemo.vapi);mountRileyControls(mount);setRileyStatus('ready','Riley is online','Waiting for a call');
   }catch(error){rileyDemo.initialized=false;const friendly=rileyFriendlyError(error);setRileyStatus('error','Demo unavailable',friendly)}
 }
 
