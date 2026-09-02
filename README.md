@@ -23,6 +23,6 @@ The authenticated Overview includes a browser-based **Talk to Riley** demo power
 - `VAPI_PUBLIC_KEY` — a Vapi public key restricted to the production site origin and the Riley assistant
 - `VAPI_ASSISTANT_ID` — Riley's assistant ID
 
-The browser demo requires explicit consent and microphone permission, limits calls to five minutes, and refreshes dashboard data shortly after a call ends. Never expose the Vapi private key in the browser or in these variables.
+The browser demo requires explicit consent and microphone permission and refreshes dashboard data shortly after a call ends. Never expose the Vapi private key in the browser or in these variables.
 
 Production note: `public.appointment_followups` still requires an RLS policy decision before a public production deployment. Do not enable RLS blindly until the existing n8n Supabase credential behavior is confirmed.
