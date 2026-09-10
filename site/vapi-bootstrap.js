@@ -7,11 +7,11 @@ const Vapi = [
 ].find(candidate => typeof candidate === 'function');
 
 if (typeof Vapi === 'function') {
-  window.BrightSmileVapi = Vapi;
-  window.dispatchEvent(new Event('brightsmile-vapi-ready'));
+  window.CleggsLaneVapi = Vapi;
+  window.dispatchEvent(new Event('cleggs-lane-vapi-ready'));
 } else {
-  console.error('BrightSmile Vapi SDK loaded without a usable constructor.');
-  window.dispatchEvent(new CustomEvent('brightsmile-vapi-error', {
+  console.error('Cleggs Lane Vapi SDK loaded without a usable constructor.');
+  window.dispatchEvent(new CustomEvent('cleggs-lane-vapi-error', {
     detail: { code: 'invalid_sdk_export' },
   }));
 }

@@ -8,7 +8,7 @@ function mountRileyCard(){
   card.id='rileyDemoCard';
   card.className='riley-demo-card';
   card.setAttribute('aria-labelledby','rileyDemoTitle');
-  card.innerHTML=`<div class="riley-demo-visual" aria-hidden="true"><div class="riley-orb"><span>R</span></div><div class="voice-wave"><i></i><i></i><i></i><i></i><i></i></div></div><div class="riley-demo-copy"><div class="riley-demo-topline"><div class="eyebrow">LIVE AI RECEPTIONIST</div><div id="rileyStatus" class="riley-status"><i></i><span>Connecting Riley…</span></div></div><h2 id="rileyDemoTitle">Talk to Riley</h2><p>Test the complete BrightSmile booking experience from your browser. Riley can check availability, create a patient, and book an appointment through the live workflow.</p><div class="riley-demo-facts"><span>🎙 Browser microphone</span><span>🔒 Restricted Riley access</span><span>↻ Auto-refresh after call</span></div><div class="riley-demo-instruction"><strong>Try saying:</strong> “I’m a new patient and I’d like to book a dental check-up this Friday afternoon.”</div><p class="riley-consent-note">Use test details only. The demo may be recorded and transcribed for testing and quality review.</p></div><div class="riley-widget-column"><div class="riley-live-readout"><small>CALL TIME</small><strong id="rileyCallTimer">00:00</strong><span id="rileyCallNote">Loading secure voice controls…</span></div><div id="rileyWidgetMount" class="riley-widget-mount" aria-live="polite"></div></div>`;
+  card.innerHTML=`<div class="riley-demo-visual" aria-hidden="true"><div class="riley-orb"><span>R</span></div><div class="voice-wave"><i></i><i></i><i></i><i></i><i></i></div></div><div class="riley-demo-copy"><div class="riley-demo-topline"><div class="eyebrow">LIVE AI RECEPTIONIST</div><div id="rileyStatus" class="riley-status"><i></i><span>Connecting Riley…</span></div></div><h2 id="rileyDemoTitle">Speak with Riley</h2><p>Test the Cleggs Lane Dental Practice booking experience from your browser. Riley can answer clinic questions, check availability, create a patient, and book an appointment through the live workflow.</p><div class="riley-demo-facts"><span>Browser microphone</span><span>Restricted Riley access</span><span>Auto-refresh after call</span></div><div class="riley-demo-instruction"><strong>Try saying:</strong> “I’m a new patient and I’d like to book a dental check-up this Friday afternoon.”</div><p class="riley-consent-note">Use test details only. The demo may be recorded and transcribed for testing and quality review.</p></div><div class="riley-widget-column"><div class="riley-live-readout"><small>CALL TIME</small><strong id="rileyCallTimer">00:00</strong><span id="rileyCallNote">Loading secure voice controls…</span></div><div id="rileyWidgetMount" class="riley-widget-mount" aria-live="polite"></div></div>`;
   hero.insertAdjacentElement('afterend',card);
 }
 
@@ -56,16 +56,16 @@ function renderRileyTranscript(){
 
 async function waitForVapiSDK(){
   const deadline=Date.now()+20000;
-  while(typeof window.BrightSmileVapi!=='function'&&Date.now()<deadline)await new Promise(resolve=>setTimeout(resolve,100));
-  if(typeof window.BrightSmileVapi!=='function')throw new Error('The secure voice SDK could not be loaded.');
-  return window.BrightSmileVapi;
+  while(typeof window.CleggsLaneVapi!=='function'&&Date.now()<deadline)await new Promise(resolve=>setTimeout(resolve,100));
+  if(typeof window.CleggsLaneVapi!=='function')throw new Error('The secure voice SDK could not be loaded.');
+  return window.CleggsLaneVapi;
 }
 
 function mountRileyControls(mount){
-  const consented=localStorage.getItem('brightsmile_riley_demo_consent')==='true';
+  const consented=localStorage.getItem('cleggs_lane_riley_demo_consent')==='true';
   mount.innerHTML=`<div class="riley-call-controls"><label class="riley-consent-check"><input id="rileyConsent" type="checkbox" ${consented?'checked':''}><span>I agree to use test data and understand this call may be recorded or transcribed.</span></label><button id="rileyCallButton" class="riley-call-button" type="button" ${consented?'':'disabled'}>Start Free Demo Call</button><p id="rileyStage" class="riley-stage">Ready for a browser call</p><div id="rileyTranscript" class="riley-transcript" hidden><small>LIVE TRANSCRIPT</small><div id="rileyTranscriptList"></div></div></div>`;
   const consent=document.querySelector('#rileyConsent'),button=document.querySelector('#rileyCallButton');
-  consent.addEventListener('change',()=>{if(consent.checked)localStorage.setItem('brightsmile_riley_demo_consent','true');else localStorage.removeItem('brightsmile_riley_demo_consent');button.disabled=!consent.checked||rileyDemo.starting});
+  consent.addEventListener('change',()=>{if(consent.checked)localStorage.setItem('cleggs_lane_riley_demo_consent','true');else localStorage.removeItem('cleggs_lane_riley_demo_consent');button.disabled=!consent.checked||rileyDemo.starting});
   button.addEventListener('click',()=>rileyDemo.active?endRileyCall():startRileyCall());
 }
 
